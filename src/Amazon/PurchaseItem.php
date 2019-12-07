@@ -2,56 +2,55 @@
 
 namespace ReceiptValidator\Amazon;
 
-use ReceiptValidator\RunTimeException;
 use Carbon\Carbon;
+use ReceiptValidator\RunTimeException;
 
 class PurchaseItem
 {
-
     /**
-     * purchase item info
+     * purchase item info.
      *
      * @var array|null
      */
     protected $_response;
 
     /**
-     * quantity
+     * quantity.
      *
      * @var int
      */
     protected $_quantity;
 
     /**
-     * product_id
+     * product_id.
      *
      * @var string
      */
     protected $_product_id;
 
     /**
-     * transaction_id
+     * transaction_id.
      *
      * @var string
      */
     protected $_transaction_id;
 
     /**
-     * purchase_date
+     * purchase_date.
      *
      * @var Carbon
      */
     protected $_purchase_date;
 
     /**
-     * cancellation_date
+     * cancellation_date.
      *
      * @var Carbon
      */
     protected $_cancellation_date;
 
     /**
-     * renewal_date
+     * renewal_date.
      *
      * @var Carbon
      */
@@ -113,7 +112,6 @@ class PurchaseItem
         return $this->_renewal_date;
     }
 
-
     /**
      * PurchaseItem constructor.
      *
@@ -129,10 +127,11 @@ class PurchaseItem
     }
 
     /**
-     * Parse JSON Response
+     * Parse JSON Response.
      *
      * @return PurchaseItem
      * @throws RunTimeException
+     *
      */
     public function parseJsonResponse(): self
     {

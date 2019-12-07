@@ -2,8 +2,8 @@
 
 namespace ReceiptValidator\iTunes;
 
-use ReceiptValidator\RunTimeException;
 use GuzzleHttp\Client as HttpClient;
+use ReceiptValidator\RunTimeException;
 
 class Validator
 {
@@ -46,6 +46,12 @@ class Validator
      * @var HttpClient
      */
     protected $client;
+
+    /**
+     * request options
+     * @var array
+     */
+    protected $request_options = [];
 
     /**
      * Validator constructor
@@ -156,12 +162,34 @@ class Validator
     }
 
     /**
+     * Get Client Request Options
+     * @return array
+     */
+    public function getRequestOptions(): array
+    {
+        return $this->request_options;
+    }
+
+    /**
+     * Set Client Options
+     * @param array $request_options
+     * @return Validator
+     */
+    public function setRequestOptions(array $request_options): self
+    {
+        $this->request_options = $request_options;
+        return $this;
+    }
+
+    /**
      * Get Guzzle client config
      * @return array
      */
     protected function getClientConfig(): array
     {
-        return ['base_uri' => $this->endpoint];
+        $baseUri = ['base_uri' => $this->endpoint];
+        $clientConfig = array_merge($this->request_options, $baseUri);
+        return $clientConfig;
     }
 
     /**
@@ -215,7 +243,6 @@ class Validator
      */
     public function validate(?string $receipt_data = null, ?string $shared_secret = null): ResponseInterface
     {
-
         if ($receipt_data !== null) {
             $this->setReceiptData($receipt_data);
         }
@@ -258,7 +285,6 @@ class Validator
 
                 return $this->sendRequestUsingClient($client);
             }
-
         } else {
             $response = new SandboxResponse($decodedBody);
         }

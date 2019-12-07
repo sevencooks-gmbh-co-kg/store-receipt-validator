@@ -2,25 +2,24 @@
 
 namespace ReceiptValidator\Amazon;
 
-use ReceiptValidator\RunTimeException as RunTimeException;
-use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
+use ReceiptValidator\RunTimeException as RunTimeException;
 
 class Validator
 {
-
     const ENDPOINT_SANDBOX = 'http://localhost:8080/RVSSandbox/';
     const ENDPOINT_PRODUCTION = 'https://appstore-sdk.amazon.com/version/1.0/verifyReceiptId/';
 
     /**
-     * endpoint url
+     * endpoint url.
      *
      * @var string
      */
     protected $_endpoint;
 
     /**
-     * Guzzle http client
+     * Guzzle http client.
      *
      * @var \GuzzleHttp\Client
      */
@@ -51,6 +50,7 @@ class Validator
      * Validator constructor.
      *
      * @param string $endpoint
+     *
      * @throws RunTimeException
      */
     public function __construct(string $endpoint = self::ENDPOINT_PRODUCTION)
@@ -62,10 +62,9 @@ class Validator
         $this->_endpoint = $endpoint;
     }
 
-
     /**
-     *
      * @param string $userId
+     *
      * @return self
      */
     public function setUserId($userId): self
@@ -76,8 +75,8 @@ class Validator
     }
 
     /**
-     *
      * @param string $receiptId
+     *
      * @return self
      */
     public function setReceiptId($receiptId): self
@@ -87,9 +86,8 @@ class Validator
         return $this;
     }
 
-
     /**
-     * get developer secret
+     * get developer secret.
      *
      * @return string
      */
@@ -99,8 +97,8 @@ class Validator
     }
 
     /**
-     *
      * @param string $developerSecret
+     *
      * @return self
      */
     public function setDeveloperSecret($developerSecret): self
@@ -111,7 +109,7 @@ class Validator
     }
 
     /**
-     * get endpoint
+     * get endpoint.
      *
      * @return string
      */
@@ -121,9 +119,10 @@ class Validator
     }
 
     /**
-     * set endpoint
+     * set endpoint.
      *
      * @param string $endpoint
+     *
      * @return $this
      */
     public function setEndpoint(string $endpoint): self
@@ -133,9 +132,8 @@ class Validator
         return $this;
     }
 
-
     /**
-     * returns the Guzzle client
+     * returns the Guzzle client.
      *
      * @return HttpClient
      */
@@ -148,12 +146,13 @@ class Validator
         return $this->_client;
     }
 
-
     /**
-     * validate the receipt data
-     * @return Response
+     * validate the receipt data.
+     *
      * @throws RunTimeException
      * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @return Response
      */
     public function validate()
     {
@@ -167,7 +166,8 @@ class Validator
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 return new Response(
-                    $e->getResponse()->getStatusCode(), json_decode($e->getResponse()->getBody(), true)
+                    $e->getResponse()->getStatusCode(),
+                    json_decode($e->getResponse()->getBody(), true)
                 );
             }
         }

@@ -3,6 +3,7 @@
 namespace ReceiptValidator\iTunes;
 
 use ArrayAccess;
+use Carbon\Carbon;
 use ReceiptValidator\RunTimeException;
 
 class PendingRenewalInfo implements ArrayAccess
@@ -44,7 +45,8 @@ class PendingRenewalInfo implements ArrayAccess
     const AUTO_RENEW_INACTIVE = 0;
 
     /**
-     * Computed status code
+     * Computed status code.
+     *
      * @var string
      */
     const STATUS_ACTIVE = 'active';
@@ -52,22 +54,25 @@ class PendingRenewalInfo implements ArrayAccess
     const STATUS_EXPIRED = 'expired';
 
     /**
-     * Product ID
+     * Product ID.
+     *
      * @var string
      */
-    protected $product_id = "";
+    protected $product_id = '';
 
     /**
      * Auto Renew Product ID
+     *
      * @var string
      */
-    protected $auto_renew_product_id = "";
+    protected $auto_renew_product_id = '';
 
     /**
-     * Original Transaction ID
+     * Original Transaction ID.
+     *
      * @var string
      */
-    protected $original_transaction_id = "";
+    protected $original_transaction_id = '';
 
     /**
      * The current renewal status for the auto-renewable subscription
@@ -80,27 +85,39 @@ class PendingRenewalInfo implements ArrayAccess
     protected $auto_renew_status = false;
 
     /**
-     * Expiration Intent Code
+     * Expiration Intent Code.
+     *
      * @var int|null
      */
     protected $expiration_intent;
 
     /**
-     * Is In Billing Retry Period Code
+     * he time at which the grace period for subscription renewals expires.
+     *
+     * @var Carbon
+     */
+    protected $grace_period_expires_date;
+
+    /**
+     * Is In Billing Retry Period Code.
+     *
      * @var int|null
      */
     protected $is_in_billing_retry_period;
 
     /**
-     * Pending renewal info
+     * Pending renewal info.
+     *
      * @var array|null
      */
     protected $raw_data = null;
 
     /**
      * Response constructor.
-     * @throws RunTimeException
+     *
      * @param array|null $data
+     *
+     * @throws RunTimeException
      */
     public function __construct(?array $data = null)
     {
@@ -109,9 +126,10 @@ class PendingRenewalInfo implements ArrayAccess
     }
 
     /**
-     * Parse Data from JSON Response
+     * Parse Data from JSON Response.
      *
      * @throws RunTimeException
+
      * @return $this
      */
     public function parseData(): self
@@ -123,14 +141,20 @@ class PendingRenewalInfo implements ArrayAccess
         $this->product_id = $this->raw_data['product_id'];
         $this->original_transaction_id = $this->raw_data['original_transaction_id'];
         $this->auto_renew_product_id = $this->raw_data['auto_renew_product_id'];
-        $this->auto_renew_status = (bool)$this->raw_data['auto_renew_status'];
+        $this->auto_renew_status = (bool) $this->raw_data['auto_renew_status'];
 
         if (array_key_exists('expiration_intent', $this->raw_data)) {
-            $this->expiration_intent = (int)$this->raw_data['expiration_intent'];
+            $this->expiration_intent = (int) $this->raw_data['expiration_intent'];
+        }
+
+        if (array_key_exists('grace_period_expires_date_ms', $this->raw_data)) {
+            $this->grace_period_expires_date = Carbon::createFromTimestampUTC(
+                (int) round($this->raw_data['grace_period_expires_date_ms'] / 1000)
+            );
         }
 
         if (array_key_exists('is_in_billing_retry_period', $this->raw_data)) {
-            $this->is_in_billing_retry_period = (int)$this->raw_data['is_in_billing_retry_period'];
+            $this->is_in_billing_retry_period = (int) $this->raw_data['is_in_billing_retry_period'];
         }
 
         return $this;
@@ -220,6 +244,26 @@ class PendingRenewalInfo implements ArrayAccess
         }
 
         return null;
+    }
+
+    /**
+     * Grace Period Expires Date
+     * @return Carbon
+     */
+    public function getGracePeriodExpiresDate(): ?Carbon
+    {
+        return $this->grace_period_expires_date;
+    }
+
+    /**
+     * Billing retrying and grace period expires date is in the future
+     * @return bool
+     */
+    public function isInGracePeriod()
+    {
+        return $this->is_in_billing_retry_period == self::RETRY_PERIOD_ACTIVE &&
+            $this->grace_period_expires_date !== null &&
+            $this->grace_period_expires_date->getTimestamp() > time();
     }
 
     /**
