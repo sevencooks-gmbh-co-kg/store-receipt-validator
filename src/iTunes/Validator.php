@@ -213,6 +213,15 @@ class Validator
         return $this->client;
     }
 
+
+    /**
+     * @param HttpClient $client
+     */
+    public function setClient(HttpClient $client): void
+    {
+        $this->client = $client;
+    }
+
     /**
      * Prepare request data (json).
      *
