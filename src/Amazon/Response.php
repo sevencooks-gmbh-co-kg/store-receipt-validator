@@ -115,8 +115,6 @@ class Response
      * @throws RunTimeException
      *
      * @return $this
-     *
-     * @throws RunTimeException
      */
     public function parseJsonResponse($jsonResponse = null): self
     {

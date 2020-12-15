@@ -66,7 +66,6 @@ class Acknowledger
         $this->packageName = $packageName;
         $this->purchaseToken = $purchaseToken;
         $this->productId = $productId;
-
         $this->strategy = $strategy;
     }
 

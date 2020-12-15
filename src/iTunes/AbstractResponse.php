@@ -262,7 +262,6 @@ abstract class AbstractResponse
      * @throws RunTimeException
      *
      * @return $this
-     * @throws RunTimeException
      */
     public function parseData(): self
     {
